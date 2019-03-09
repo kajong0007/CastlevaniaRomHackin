@@ -7,8 +7,10 @@ THIS_DIR=$(dirname $0)
 
 declare -a patch_list
 patch_list=$(cat <<EOF
-1FF,65
-2FF,65,33
+1C12F,4c,e0,c4
+1C4F0,ad,1a,00,4c,08,d3
+1D318,8d,fd,07,4c,84,d3
+1D394,ad,02,20,4c,22,c1
 EOF
 )
 
