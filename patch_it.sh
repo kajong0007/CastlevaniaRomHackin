@@ -61,13 +61,13 @@ j=$busy_start_addr
 while [ $i -lt $nmi_end_addr ]
 do
   dd conv=notrunc if="$NMIOUT" bs=1 count=$NMIREALSIZE seek=$i of="$OFILE"
-  dd conv=notrunc if="$BUSYOUT" bs=1 count=$BUSYREALSIZE seek=$j of="$OFILE"
+  #dd conv=notrunc if="$BUSYOUT" bs=1 count=$BUSYREALSIZE seek=$j of="$OFILE"
   i=$(( $i + $step ))
   j=$(( $j + $step ))
 done
 
 dd conv=notrunc if="$NMIOUT" bs=1 count=3 skip=$NMIREALSIZE seek=$(echo '16i1C068p' | dc) of="$OFILE"
-dd conv=notrunc if="$BUSYOUT" bs=1 count=3 skip=$BUSYREALSIZE seek=$(echo '16i1C04Cp' | dc) of="$OFILE"
+#dd conv=notrunc if="$BUSYOUT" bs=1 count=3 skip=$BUSYREALSIZE seek=$(echo '16i1C04Cp' | dc) of="$OFILE"
 
 #echo "$patch_list" | while read line
 #do
