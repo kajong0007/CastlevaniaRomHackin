@@ -3,64 +3,71 @@
 set -x
 set -e
 
-MAX_SIZE=247
-
 THIS_DIR=$(dirname $0)
+
 IFILE="$THIS_DIR"/CV1.nes
 OFILE="$THIS_DIR"/modified_CV1.nes
-ASMFILE="$THIS_DIR"/cv.asm
-OUTASM="$THIS_DIR"/out.a65
+
+ASMFILE=("$THIS_DIR"/cv_nmi.asm "$THIS_DIR"/cv_busyloop.asm)
+OUTASM=("$THIS_DIR"/outnmi.a65 "$THIS_DIR"/outbusyloop.a65)
+# size is +6 because of 1 extra byte, 1 extra jump, and 1 because i don't
+# remember the <= bash operator so i just added 1 and used less than
+MAXSIZE=(104 77)
+NUMASM=${#ASMFILE[*]}
+
+NMIOUT="${OUTASM[0]}"
+BUSYOUT="${OUTASM[1]}"
+
+NMISIZE=0
+BUSYSIZE=0
+
 ASSEM="xa"
 
-$ASSEM $ASMFILE -o out.a65
+i=0
+
+while [ $i -lt "$NUMASM" ]
+do
+  "$ASSEM" "${ASMFILE[$i]}" -o "${OUTASM[$i]}"
+  if [ "${MAXSIZE[$i]}" -lt $(stat -c"%s" "${OUTASM[$i]}") ]
+  then
+    echo "ERROR: File ${ASMFILE[$i]} exceeded max size ${MAXSIZE[$i]}"
+    exit 1
+  fi
+  ((++i))
+done
+
+NMISIZE=$(stat -c'%s' "$NMIOUT")
+NMIREALSIZE=$(( $NMISIZE - 3 ))
+
+BUSYSIZE=$(stat -c'%s' "$BUSYOUT")
+BUSYREALSIZE=$(( $BUSYSIZE - 3 ))
+
+#bf08
+#bf6c
+nmi_start_addr=$(echo '16i3F18p' | dc)
+nmi_end_addr=$(echo '16i1BF19p' | dc)
+busy_start_addr=$(echo '16i3F7Cp' | dc)
+busy_end_addr=$(echo '16i1BF7Dp' | dc)
+step=$(echo '16i4000p' | dc)
+
 
 #-1C068,4c,ad,bf
 #-1C04C,4c,eb,bf
-#-03FBD,a5,18,c9
-#-03FC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-03FD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-03FE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-03FF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-04000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-#-07FBD,a5,18,c9
-#-07FC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-07FD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-07FE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-07FF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-08000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-#-0BFBD,a5,18,c9
-#-0BFC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-0BFD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-0BFE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-0BFF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-0C000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-#-0FFBD,a5,18,c9
-#-0FFC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-0FFD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-0FFE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-0FFF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-10000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-#-13FBD,a5,18,c9
-#-13FC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-13FD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-13FE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-13FF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-14000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-#-17FBD,a5,18,c9
-#-17FC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-17FD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-17FE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-17FF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-18000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-#-1BFBD,a5,18,c9
-#-1BFC0,05,f0,06,ad,02,20,4c,5b,c0,8a,48,98,48,a2,7c,a0
-#-1BFD0,20,8c,06,20,8e,06,20,28,a9,e5,8d,07,20,8c,06,20
-#-1BFE0,8e,06,20,e8,a9,dd,8d,07,20,8c,06,20,8e,06,20,a5
-#-1BFF0,56,8d,07,20,68,a8,68,aa,4c,b3,bf,a5,1a,29,0f,c9
-#-1C000,0a,30,06,e9,0a,09,e0,30,02,09,d0,85,56,4c,3c,c0
-
 
 cp "$IFILE" "$OFILE"
+
+i=$nmi_start_addr
+j=$busy_start_addr
+while [ $i -lt $nmi_end_addr ]
+do
+  dd conv=notrunc if="$NMIOUT" bs=1 count=$NMIREALSIZE seek=$i of="$OFILE"
+  dd conv=notrunc if="$BUSYOUT" bs=1 count=$BUSYREALSIZE seek=$j of="$OFILE"
+  i=$(( $i + $step ))
+  j=$(( $j + $step ))
+done
+
+dd conv=notrunc if="$NMIOUT" bs=1 count=3 skip=$NMIREALSIZE seek=$(echo '16i1C068p' | dc) of="$OFILE"
+dd conv=notrunc if="$BUSYOUT" bs=1 count=3 skip=$BUSYREALSIZE seek=$(echo '16i1C04Cp' | dc) of="$OFILE"
 
 #echo "$patch_list" | while read line
 #do

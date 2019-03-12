@@ -2,7 +2,7 @@ NMI = $bf08
   lda $18
   cmp #$05
   beq start
-end:
+hereisend:
   lda $2002
   jmp interrupt_core+3
 start:
@@ -37,24 +37,7 @@ start:
   tay
   pla
   tax
-  bvc end
-
-BUSYLOOP = NMI + 100
-  lda $1a
-  and #$0f
-  cmp #$0a
-  bmi below9
-  sbc #$0a
-  ora #$e0
-  bmi number
-below9:
-  ora #$d0
-number:
-  sta $56
-  jmp busyloop_core+3
-
+  bvc hereisend
 
 interrupt_core = $c058
 jmp NMI
-busyloop_core = $c03c
-jmp BUSYLOOP
