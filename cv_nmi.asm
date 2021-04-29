@@ -1,4 +1,9 @@
 * = $bf08
+
+#define SIMON_X_HIBYTE $41
+#define SIMON_X_LOBYTE $40
+#define SIMON_Y $3f
+
 NMI
   lda $18
   cmp #$05
@@ -27,23 +32,48 @@ number
   rts
 
 start
-  ldx #$7c
+  ldx #$7a
   ldy #$20
 
-  lda #$e5
+; draw 'X'
+  lda #$f7
   jsr drawsr
   inx
 
+; draw '-'
   lda #$dd
   jsr drawsr
   inx
 
-  lda $1a
+  lda SIMON_X_HIBYTE
+  lsr
+  lsr
+  lsr
+  lsr
+  and #$0f
+  jsr drawhexnum
+  inx
+
+  lda SIMON_X_HIBYTE
+  and #$0f
+  jsr drawhexnum
+
+  lda SIMON_X_LOBYTE
+  lsr
+  lsr
+  lsr
+  lsr
+  and #$0f
+  jsr drawhexnum
+  inx
+
+  lda SIMON_X_LOBYTE
   and #$0f
   jsr drawhexnum
 
   ldx #$9c
-  lda #$f1
+; draw letter 'Y'
+  lda #$f8
   jsr drawsr
   inx
 
@@ -51,7 +81,7 @@ start
   jsr drawsr
   inx
 
-  lda $6f
+  lda SIMON_Y
 ; 209C-F
   lsr
   lsr
@@ -61,7 +91,7 @@ start
   jsr drawhexnum
 
   inx
-  lda $6f
+  lda SIMON_Y
   and #$0f
   jsr drawhexnum
 
