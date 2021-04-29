@@ -35,8 +35,8 @@ start
   ldx #$7a
   ldy #$20
 
-; draw 'X'
-  lda #$f7
+; draw 'K' there is no 'X'
+  lda #$ea
   jsr drawsr
   inx
 
@@ -57,6 +57,7 @@ start
   lda SIMON_X_HIBYTE
   and #$0f
   jsr drawhexnum
+  inx
 
   lda SIMON_X_LOBYTE
   lsr
