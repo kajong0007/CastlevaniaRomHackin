@@ -1,4 +1,4 @@
-; special to xa: a "block begin" meta-instruction
+; special to xa, a "block begin" meta-instruction
 ; this means that I can have labels that only exist between these parens
 .(
   ; digits are in a different sprite memory area than letters, so to draw hex
@@ -20,7 +20,7 @@
   ; this or how I found this out
   bmi number
 
-; another xa trick: - in front of a label means "I can redefine this all I want"
+; another xa trick, '-' in front of a label means "I can redefine this all I want"
 ; so I won't get an assembler error if I make this label many many times
 -below9
 
@@ -28,13 +28,14 @@
   ora #$d0
 
 ; here's were we actually draw the sprite in A at the coords in X and Y
-; in draw_sr
+; in drawing part of the code below
 -number
 
   ; $2006 is a special double-write register that controls the X,Y coords on screen
   ; to draw the next thing written into $2007
   ; I'm only slightly sure that I kept X and Y consistent with, you know, the usual
   ; coordinate system
+  /* see https://wiki.nesdev.com/w/index.php/PPU_registers */
   sty $2006
   stx $2006
 

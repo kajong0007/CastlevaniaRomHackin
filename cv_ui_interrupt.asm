@@ -5,7 +5,7 @@
 ; so this makes sure that the jump instructions are properly
 ; lined up
 
-; I used the xa assembler because I'm a Linux nerd, so I rely on a couple of features:
+; I used the xa assembler because I'm a Linux nerd, so I rely on a couple of features,
 ; - C preprocessor-like statements, #define and #include
 ; - setting the program counter for jmp calculation
 
@@ -35,7 +35,7 @@
 NMI
   ; address containing game's current "mode", title screen, post boss countdown,
   ; regular gameplay, etc.
-  ; see https://datacrystal.romhacking.net/wiki/Castlevania:RAM_map
+  /* see https://datacrystal.romhacking.net/wiki/Castlevania:RAM_map */
   lda $18
 
   ; a value of 0x5 is "Playing" according to Data Crystal
@@ -49,7 +49,7 @@ NMI
 
 ; the instructions I took over were a 3-byte LDA instruction because a
 ; jump is also 3 bytes. This is the ol skool way to hack new instructions
-; into a program: find a place to insert a new jump, then do that instruction
+; into a program; find a place to insert a new jump, then do that instruction
 ; before jumping back. I seem to remember researching a bit to make sure it was
 ; as spot where basically every register got rewritten, so I didn't have other
 ; state to worry about restoring.
@@ -65,9 +65,12 @@ hereisend
 
 ; begin our subroutine to draw UI elements
 start
-  ; first UI element is the 2 bytes of simon's X position
-  ; these coords are used in the cv_drawhexnum file to tell the PPU where to
-  ; draw the next tile
+  ; The UI elements are in PPU memory on the NES, so we'll need to write
+  ; to the $2006 address to send over where we want to draw our numbers.
+  ; The UI is a flat memory space from like $2020 to $20a0 or something
+  ; so we need a $20 constantly but X can change here to move us forward
+  ; one tile
+  /* see https://wiki.nesdev.com/w/index.php/PPU_registers */
   ldx #$7c
   ldy #$20
 
@@ -120,6 +123,8 @@ start
   and #$0f
 #include "cv_drawhexnum.asm"
 
+  ; move far forwards in the UI flat map to get to the next line
+  ; where we'll draw our Y coordinates
   ldx #$9e
   lda SIMON_Y
   lsr
@@ -133,7 +138,17 @@ start
   and #$0f
 #include "cv_drawhexnum.asm"
 
+  ; we're done! redo our LDA instruction and leave our subroutine
   jmp hereisend
 
+; this is the address where we inject our new code
+; the patching util has to write these 3 bytes of jump instruction
+; into the right place
+
+; the address here is an xa extension where you can tell it the label 
+; is placed at this instruction pointer location
+; notice we jump back to this plus 3, that's just for convenience
 interrupt_core = $c058
+
+; jump into our subroutine
 jmp NMI
