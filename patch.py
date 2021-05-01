@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+# some basic util libraries for my program
 import argparse
 import os
 import shutil
@@ -30,6 +32,8 @@ STEP=0x4000
 # jump into our code
 INJECTION_ADDR = 0x1c068
 
+# The argparse library handles making command line flags
+# for a program like "--help" and "-o" and such
 def parse_args():
     parsey = argparse.ArgumentParser()
     parsey.add_argument("--assembler", "-a",
