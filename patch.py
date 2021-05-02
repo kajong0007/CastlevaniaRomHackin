@@ -61,7 +61,6 @@ def parse_args():
     return args
 
 def assemble(args):
-    global MAXSIZE
     command = [args.assembler]
     if args.assemblerflags:
         command.extend(args.assemblerflags.strip().split(" "))
@@ -69,20 +68,15 @@ def assemble(args):
     subprocess.check_call(command)
     s = os.stat("./outasm.a65")
     if s.st_size > MAXSIZE:
-        raise Exception(f"ERROR: current binary size exceeds max size"
-                "of empty space in ROM ({s.st_size} > {MAXSIZE})")
+        raise Exception("ERROR: current binary size exceeds max size"
+                f"of empty space in ROM ({s.st_size} > {MAXSIZE})")
 
 def patch(args):
-    global START_ADDR
-    global END_ADDR
-    global STEP
-    global INJECTION_ADDR
-
     payload_bytes = b""
     with open("./outasm.a65", "rb") as asmf:
         payload_bytes = asmf.read()
     jump_instruction = payload_bytes[-3:]
-    payload_bytes[:-3]
+    payload_bytes = payload_bytes[:-3]
 
     with open(args.outfile, "r+b") as f:
         addr = START_ADDR
