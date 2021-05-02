@@ -15,9 +15,10 @@ generalized to other games and other romhacks.
 
 * the `xa` assembler is easiest. I was able to install it from repos on
 Ubuntu but here's the
-[https://www.floodgap.com/retrotech/xa/](official page)
+[official page](https://www.floodgap.com/retrotech/xa/)
 and I found what appears to be a
-[https://kh-labs.org/concepts/xa65/](Windows build).
+[Windows build](https://kh-labs.org/concepts/xa65/)
+.
 
 Alternatively, you'll need to adjust the code in the
 asm files to work with another assembler (explanation in comments of
@@ -59,7 +60,9 @@ There are other options if you run `patch.py --help` such as
 Lots of values for this specific patch are hardcoded into the `patch.py` script,
 so it is currently not generalized to other NES games.
 
-From here, I used [https://github.com/kylon/Lipx](Lipx) to generate the IPS
+From here, I used
+[Lipx](https://github.com/kylon/Lipx)
+to generate the IPS
 patch file, but you can use any patch creation utility.
 
 ## How did you make this?
@@ -68,17 +71,17 @@ Determination.
 
 ### Resources I used
 
-[https://wiki.nesdev.com/w/index.php/Nesdev_Wiki](Nesdev Wiki)
+[Nesdev Wiki](https://wiki.nesdev.com/w/index.php/Nesdev_Wiki)
 
-[https://datacrystal.romhacking.net/wiki/Castlevania](Data crystal)
+[Data crystal](https://datacrystal.romhacking.net/wiki/Castlevania)
 specifically the RAM map and ROM map on the top right
 
-[https://www.masswerk.at/6502/6502_instruction_set.html](6502 instruction set)
+[6502 instruction set](https://www.masswerk.at/6502/6502_instruction_set.html)
 
-[http://6502.org/tutorials/6502opcodes.html](another 6502 page)
+[another 6502 page](http://6502.org/tutorials/6502opcodes.html)
 that is more explanatory
 
-[https://skilldrick.github.io/easy6502/](6502 in-browser tools)
+[6502 in-browser tools](https://skilldrick.github.io/easy6502/)
 with an assembler and register display. Great for testing small programs.
 
 ### Some NES Information
@@ -115,7 +118,8 @@ What we need to do to patch in our game code is two things:
 
 Turns out, this is pretty hard. NES games have a bunch of different segments
 to their memory called "banks".
-[https://datacrystal.romhacking.net/wiki/Castlevania](Data Crystal) says that
+[Data Crystal](https://datacrystal.romhacking.net/wiki/Castlevania)
+says that
 Castlevania has 8 16kB banks in its ROM, so there are 2 ways we can go about
 this business: 1) find out which ROM banks are in use at which parts of the
 game and modify those appropriately or 2) find one common location in each
@@ -129,12 +133,13 @@ then each of the banks will have a jump instruction there to jump to your
 *real* payload, but just get creative.
 
 Data Crystal's
-[https://datacrystal.romhacking.net/wiki/Castlevania:ROM_map](ROM map)
+[ROM map](https://datacrystal.romhacking.net/wiki/Castlevania:ROM_map)
 has a lot of information, but you'll probably need to explore memory yourself
 in your favorite debugging emulator. I used
-[https://mednafen.github.io/](Mednafen) which has some pretty advanced
-debugging features that I have yet to explore fully. All screenshots below
-will be from Mednafen.
+[Mednafen](https://mednafen.github.io/)
+which has some pretty advanced debugging features that I have yet to explore
+fully. All screenshots below will be from Mednafen. It's also cross platform,
+so hopefully anyone can use it. (at least Windows and Linux users)
 
 ### Code Injection
 
