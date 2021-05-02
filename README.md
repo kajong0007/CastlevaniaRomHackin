@@ -141,7 +141,46 @@ which has some pretty advanced debugging features that I have yet to explore
 fully. All screenshots below will be from Mednafen. It's also cross platform,
 so hopefully anyone can use it. (at least Windows and Linux users)
 
+### Writing code
+
+I started out hand coding 6502 machine code byte by byte. It kinda sucks. I
+would not suggest it. If you want to, I used `xxd`, the hex editor that comes
+with `vim`. I really wouldn't suggest it, but I guess it's a "fun" exercise
+for some definitions of "fun".
+
+Anyway, the much more reasonable approach to writing 6502 code is using an
+assembler. I chose `xa` because it was available for my Ubuntu Linux machine
+in the
+[main repository](https://packages.ubuntu.com/bionic/xa65)
+which surprises me because I didn't think 6502s were all that popular.
+
+The assembly I need to write here is all relatively simple: grab a memory
+value, transform it a little, write stuff somewhere else. Unfortunately, this
+does mean learning a whole lot about the NES.
+
+Long story short, I have a lot of documentation in my asm code, but here's
+some interesting stuff.
+
+Firstly the 6502 only has 3 registers: A, X, and Y. Most instructions only
+operate on A and there are instructions to store A in memory, move A to X,
+store stuff at the address in Y, etc. Explore some of the instruction set
+at the 6502 links above, but it's all incredibly limited things, so simple
+things can be kinda difficult.
+
+```
+  sty $2006
+  stx $2006
+
+  sta $2007
+```
+I need a two-byte address onto the screen's memory to be written to $2006,
+but each register on the 6502 is one byte. Luckily, I have 3 registers, so I
+chose to use X and Y to keep the two bytes of the UI location, and A kept the
+value of the tile we wanted to display.
+
 ### Code Injection
+
+Now we need to get the ROM to jump into our memory region. We'll worry about the code
 
 ### Debugging Castlevania
 
