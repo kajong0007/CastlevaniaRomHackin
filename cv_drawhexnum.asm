@@ -16,8 +16,9 @@
   ora #$e0
 
   ; 6502 branch instructions are faster than jump instructions by 1 whole cycle,
-  ; so apparently branch on minus works here too? I don't actually remember writing
-  ; this or how I found this out
+  ; and the ora e0 guarantees that the current value of the accumulator
+  ; (register A) is considered negative, so branch minus ALWAYS activates
+  ; after the previous line
   bmi number
 
 ; another xa trick, '-' in front of a label means "I can redefine this all I want"

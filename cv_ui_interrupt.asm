@@ -149,6 +149,3 @@ start
 ; is placed at this instruction pointer location
 ; notice we jump back to this plus 3, that's just for convenience
 interrupt_core = $c058
-
-; jump into our subroutine
-jmp NMI
