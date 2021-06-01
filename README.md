@@ -152,7 +152,8 @@ Anyway, the much more reasonable approach to writing 6502 code is using an
 assembler. I chose `xa` because it was available for my Ubuntu Linux machine
 in the
 [main repository](https://packages.ubuntu.com/bionic/xa65)
-which surprises me because I didn't think 6502s were all that popular.
+which surprises me because I didn't think 6502s assemblers were popular
+enough to make it into the main repo.
 
 The assembly I need to write here is all relatively simple: grab a memory
 value, transform it a little, write stuff somewhere else. Unfortunately, this
@@ -180,11 +181,35 @@ value of the tile we wanted to display.
 
 ### Code Injection
 
-Now we need to get the ROM to jump into our memory region. We'll worry about the code
+So how do we get into our code we just wrote? Well, in my case, I was able to
+find unused memory at the same bank mapping. This means that I only need one
+address to jump to. So, what does that mean?
+
+The `jmp` instruction takes 3 bytes, so we have to find a place we can safely
+jump into our routine. There's an `lda $2002` instruction at address 0xc058
+and from some code observation, that's all we need to do there. The last thing
+we need to do in our injected routine is redo that `lda` followed by jumping
+back to the code we previously lept from, 0xc058 + 3 more bytes.
+
+What do I mean by "that's all we need to do there"? Well, we're operating in
+assembly, so we don't have things like function calls and "safety". If you
+have instructions that change contents of registers, there's no restore
+function for you to get an old value back. You have to write that. The
+convenience of the location I chose in castlevania, that `lda` instruction,
+is that there is code that dumps the current values of A, X, and Y into
+RAM right before that `lda` because this is the first step of the non-maskable
+interrupt.
+
+When the non-maskable interrupt starts executing the graphics code, it is an
+interrupt, so we lept to this code in the middle of an instruction. If we want
+that code to operate as expected, we need to restore things to the way they
+were when we left, and so there is code written by the Castlevania programmers
+to do just that.
+
+That makes it really easy to know that this code is safe for us to inject our
+new routine.
 
 ### Debugging Castlevania
-
-### Code injection
 
 
 
