@@ -130,7 +130,7 @@ start
   ldx #$9c
   lda FRAME_COUNTER
   and #$0f
-#include "cv_drawhexnum.asm"
+  jsr draw_hexnum_thing
   inx
   inx
 
@@ -139,15 +139,20 @@ start
   lsr
   lsr
   lsr
-#include "cv_drawhexnum.asm"
+  jsr draw_hexnum_thing
 
   inx
   lda TILE_COUNTER
   and #$0f
-#include "cv_drawhexnum.asm"
+  jsr draw_hexnum_thing
 
   ; we're done! redo our LDA instruction and leave our subroutine
   jmp hereisend
+
+
+draw_hexnum_thing:
+#include "cv_drawhexnum.asm"
+rts
 
 ; this is the address where we inject our new code
 ; the patching util has to write these 3 bytes of jump instruction
