@@ -123,13 +123,33 @@ start
   ; and now the lower nibble again
   lda SIMON_X_LOBYTE
   and #$0f
-#include "cv_drawhexnum.asm"
+  jsr draw_hexnum_thing
 
   ; move far forwards in the UI flat map to get to the next line
   ; where we'll draw our Y coordinates
-  ldx #$9c
+  ldx #$9b
   lda FRAME_COUNTER
   and #$0f
+  cmp #$0a
+  bmi under_ten
+  lsr
+  lsr
+  lsr
+  jsr draw_hexnum_thing
+  inx
+  lda FRAME_COUNTER
+  and #$0f
+  sbc #$09
+  bvc just_draw_it
+under_ten:
+  lda #$00
+  sty $2006
+  stx $2006
+  sta $2007
+  inx
+  lda FRAME_COUNTER
+  and #$0f
+just_draw_it:
   jsr draw_hexnum_thing
   inx
   inx
