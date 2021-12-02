@@ -29,6 +29,7 @@
 ; simon's Y position is just one byte
 #define SIMON_Y $3f
 #define TILE_COUNTER $30
+#define FRAME_COUNTER $1a
 
 ; the code injection we do is during the NMI section of the NES
 ; ROM code, so this label is very vague. This is the first thing
@@ -126,7 +127,13 @@ start
 
   ; move far forwards in the UI flat map to get to the next line
   ; where we'll draw our Y coordinates
-  ldx #$9e
+  ldx #$9c
+  lda FRAME_COUNTER
+  and #$0f
+#include "cv_drawhexnum.asm"
+  inx
+  inx
+
   lda TILE_COUNTER
   lsr
   lsr

@@ -30,7 +30,7 @@ inject_json = {
         {
             "file": "./cv_ui_interrupt.asm",
             "address": [0x3f18, 0x7f18, 0xbf18, 0xff18, 0x13f18, 0x17f18, 0x1bf18],
-            "max_size": 200
+            "max_size": 210
         },
         {
             "file": "./cv_nmi_jmp.asm",
